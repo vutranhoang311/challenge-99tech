@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { clampNumber, fmt } from "../../utils/utils";
 import type { Token } from "../../types/swap.type";
 import useToken from "../../hooks/useToken";
+import FallBackIconToken from "../ui/FallBackIconToken";
+import { InputAmountToken } from "../ui/InputAmountToken";
 
 type Props = {
   tokens: Token[];
@@ -14,27 +16,25 @@ type Props = {
 };
 
 const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
-  const [fromSym, setFromSym] = useState<string>(initialFrom || "");
-  const [toSym, setToSym] = useState<string>(initialTo || "");
+  const [from, setFrom] = useState<string>(initialFrom || "");
+  const [to, setTo] = useState<string>(initialTo || "");
   const [amount, setAmount] = useState<string>("");
 
-  const fromToken = useMemo(
-    () => tokens.find((t) => t.currency === fromSym)!,
-    [tokens, fromSym],
+  const fromToken: Token | undefined = useMemo(
+    () => tokens.find((t) => t.currency === from)!,
+    [tokens, from],
   );
-
   const toToken = useMemo(
-    () => tokens.find((t) => t.currency === toSym)!,
-    [tokens, toSym],
+    () => tokens.find((t) => t.currency === to)!,
+    [tokens, to],
   );
-  console.log(fromToken);
   const handleSubmit = () => {};
-  const handleSetFromSym = (v: string) => setFromSym(v);
-  const handleSetToSym = (v: string) => setToSym(v);
+  const handleSetFromSym = (v: string) => setFrom(v);
+  const handleSetToSym = (v: string) => setTo(v);
   const handleSetAmount = (v: string) => setAmount(clampNumber(v));
   const handleSwap = () => {
-    setFromSym(toSym);
-    setToSym(fromSym);
+    setFrom(to);
+    setTo(from);
   };
   const handleMax = () => setAmount(String(fromToken?.balance ?? 0));
   return (
@@ -46,7 +46,7 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
         </div>
         <form onSubmit={handleSubmit} className="space-y-5 p-4 sm:p-5">
           {/* From Row */}
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <label className="text-sm text-neutral-300">From</label>
               <div className="text-xs text-neutral-400">
@@ -58,16 +58,17 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
                 >
                   {fmt(fromToken?.balance ?? 0)}
                 </button>{" "}
-                {fromSym}
+                {from}
               </div>
             </div>
 
             <div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2">
               <div className="relative w-full min-w-0 rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2">
                 <select
-                  value={fromSym}
+                  value={from}
                   onChange={(e) => handleSetFromSym(e.target.value)}
                   className="absolute top-0 left-0 z-10 size-full text-black opacity-0 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  name="from"
                 >
                   {tokens.map((t) => (
                     <option key={t.icon} value={t.currency}>
@@ -77,14 +78,25 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
                 </select>
 
                 <div className="flex items-center gap-2">
-                  <img
-                    src={fromToken?.icon}
-                    alt="From token icon"
-                    className="h-7 w-7 rounded-full"
-                  />
-                  <span className="text-base font-medium sm:text-lg">
-                    {fromToken?.currency}
-                  </span>
+                  {from ? (
+                    <>
+                      {fromToken.icon ? (
+                        <img
+                          src={fromToken.icon}
+                          alt={fromToken.currency}
+                          className="h-7 w-7 rounded-full"
+                        />
+                      ) : (
+                        <FallBackIconToken />
+                      )}
+
+                      <span className="text-base font-medium sm:text-lg">
+                        {fromToken?.currency}
+                      </span>
+                    </>
+                  ) : (
+                    <div className="">Select</div>
+                  )}
                 </div>
               </div>
               <div className="relative min-w-0">
@@ -96,14 +108,23 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
                   onChange={(e) => handleSetAmount(e.target.value)}
                   className="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-right text-base focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:px-4 sm:text-lg"
                 />
-                {/* {exceedsBalance && ( */}
+                {exceedsBalance && (
                 <p className="absolute right-1 -bottom-5 text-xs text-red-400">
                   Amount exceeds balance
                 </p>
-                {/* )} */}
+                 )} 
               </div>
             </div>
-          </div>
+          </div> */}
+          <InputAmountToken
+            token={fromToken}
+            // balance={fromToken?.balance}
+            amount={amount}
+            handleSetAmount={handleSetAmount}
+            handleMax={handleMax}
+            handleSetFromSym={handleSetFromSym}
+            tokens={tokens}
+          />
 
           {/* Swap Button */}
           <div className="flex items-center justify-center py-1">
@@ -138,7 +159,7 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
 
             <div className="grid grid-cols-2 items-stretch gap-2 sm:grid-cols-[auto,1fr]">
               <select
-                value={toSym}
+                value={to}
                 onChange={(e) => handleSetToSym(e.target.value)}
                 className="w-full min-w-0 rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               >
@@ -153,7 +174,7 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
                 <div className="truncate">
                   <div className="text-xs text-neutral-400">You receive</div>
                   <div className="text-base font-medium">
-                    {/* ≈ {fmt(receiveAmount)} {toSym} */}
+                    {/* ≈ {fmt(receiveAmount)} {to} */}
                   </div>
                 </div>
               </div>
@@ -165,7 +186,7 @@ const SwapToken = ({ initialFrom, initialTo, tokens, balance }: Props) => {
             <div className="text-neutral-400">
               {/* {derived.hasRate ? (
                 <>
-                  1 {fromSym} = {fmt(rate)} {toSym}
+                  1 {from} = {fmt(rate)} {to}
                 </>
               ) : ( */}
               <span className="text-red-400">No rate available</span>

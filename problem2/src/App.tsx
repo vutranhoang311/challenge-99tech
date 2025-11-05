@@ -13,7 +13,6 @@ const mockUserBalance: {
 
 function App() {
   const { tokens } = useToken();
-console.log(tokens)
   return (
     <>
       <SwapToken tokens={tokens} balance={mockUserBalance} />

@@ -30,7 +30,6 @@ export const api = {
         ...token,
         icon: imageMap[token.currency] || "",
       }));
-
       const uniqueTokens = Array.from(
         tokensMerged
           .reduce((map, cur) => {
