@@ -1,21 +1,20 @@
 import SwapToken from "./components/featured/SwapToken";
 import useToken from "./hooks/useToken";
+import type { TokenBalance } from "./types/swap.type";
 
-const mockUserBalance: {
-  icon: string;
-  balance: number;
-}[] = [
-  { icon: "BUSD", balance: 3000 },
-  { icon: "USDT", balance: 10000 },
-  { icon: "BUSD", balance: 3000 },
-  { icon: "ETH", balance: 10.532 },
+const mockUserBalance: TokenBalance[] = [
+  { currency: "LUNA", balance: 10.532 },
+  { currency: "BUSD", balance: 3000 },
+  { currency: "ETH", balance: 10.532 },
+  { currency: "USD", balance: 10000 },
+  { currency: "bNEO", balance: 10000 },
 ];
 
 function App() {
   const { tokens } = useToken();
   return (
     <>
-      <SwapToken tokens={tokens} balance={mockUserBalance} />
+      <SwapToken tokens={tokens} tokensBalance={mockUserBalance} />
     </>
   );
 }

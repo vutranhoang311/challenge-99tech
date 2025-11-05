@@ -13,11 +13,11 @@ const FallBackIconToken = () => {
       <text
         x="50%"
         y="60%"
-        dominant-baseline="middle"
-        text-anchor="middle"
-        font-size="18"
+        dominantBaseline="middle"
+        textAnchor="middle"
+        fontSize="18"
         fill="#3730a3"
-        font-family="Arial, Helvetica, sans-serif"
+        fontFamily="Arial, Helvetica, sans-serif"
       >
         ICON
       </text>

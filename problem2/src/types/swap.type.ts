@@ -5,6 +5,11 @@ export type Token = {
   icon?: string;
 };
 
+export type TokenBalance = {
+  currency: string;
+  balance: number;
+};
+
 export type ApiResponse<T> = {
   data: T;
   success: boolean;

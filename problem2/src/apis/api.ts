@@ -41,7 +41,7 @@ export const api = {
           }, new Map<string, (typeof tokens)[number]>())
           .values(),
       );
-
+      console.log(uniqueTokens);
       return {
         data: uniqueTokens,
         success: true,
