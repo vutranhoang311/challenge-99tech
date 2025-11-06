@@ -1,7 +1,7 @@
 import { memo } from "react";
 import type { Token } from "../../types/swap.type";
 import { format } from "../../utils/utils";
-import FallBackIconToken from "./FallBackIconToken";
+import IconToken from "./IconToken";
 
 type Props = {
   label: string;
@@ -33,22 +33,31 @@ export const InputAmountToken = memo(
         handleSetAmount(value);
       }
     };
+
+    const exceed =
+      balance !== undefined && amount !== undefined && balance < Number(amount);
+    const estimated =
+      amount && token ? format(Number(amount) * token.price, 4) : 0;
+
     return (
       <div className="space-y-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <label className="text-sm text-neutral-300">{label}</label>
-          <div className="text-xs text-neutral-400">
+          <div
+            className={`text-xs text-neutral-400 ${disabled ? "hidden" : ""}`}
+          >
+            Balance:{" "}
             {balance && (
               <>
-                Balance:{" "}
                 <button
                   type="button"
                   className="underline hover:cursor-pointer hover:text-neutral-200"
                   onClick={handleMax}
                 >
-                  {format(balance)}
-                </button>{" "}
-                {token && token.currency}
+                  ${format(balance)}
+                </button>
+                {token &&
+                  ` ${token.currency} ~ ${format(balance * token.price, 4)} USDT`}
               </>
             )}
           </div>
@@ -75,15 +84,7 @@ export const InputAmountToken = memo(
             <div className="flex items-center gap-2">
               {token ? (
                 <>
-                  {token.icon ? (
-                    <img
-                      src={token.icon}
-                      alt={token.currency}
-                      className="h-7 w-7 rounded-full"
-                    />
-                  ) : (
-                    <FallBackIconToken />
-                  )}
+                  <IconToken src={token.icon} />
 
                   <span className="text-base font-medium sm:text-lg">
                     {token?.currency}
@@ -105,14 +106,16 @@ export const InputAmountToken = memo(
               onChange={handleChangeAmount}
               className="w-full rounded-xl border border-neutral-700 bg-neutral-800 px-3 py-2.5 text-right text-base focus:ring-2 focus:ring-indigo-500 focus:outline-none sm:px-4 sm:text-lg"
             />
-            {balance !== undefined &&
-              amount !== undefined &&
-              balance < Number(amount) && (
-                <p className="absolute right-1 -bottom-5 text-xs text-red-400">
-                  Amount exceeds balance
-                </p>
-              )}
           </div>
+          {!disabled && (
+            <p
+              className={`col-span-2 text-right text-xs ${
+                exceed ? "text-red-400" : "text-neutral-400"
+              }`}
+            >
+              {exceed ? "Amount exceeds balance" : `~ ${estimated} USDT`}
+            </p>
+          )}
         </div>
       </div>
     );

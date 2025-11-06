@@ -1,10 +1,11 @@
+type Props = { size?: number };
 
-const FallBackIconToken = () => {
+const FallBackIconToken = ({ size = 7 }: Props) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="28"
-      height="28"
+      width={`${size * 4}`}
+      height={`${size * 4}`}
       fill="none"
       viewBox="0 0 64 64"
     >

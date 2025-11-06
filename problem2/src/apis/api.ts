@@ -1,10 +1,35 @@
-import type { ApiResponse, Token } from "../types/swap.type";
+import type { ApiResponse, Token, TokenBalance } from "../types/swap.type";
 
 const TOKEN_API_URL = "https://interview.switcheo.com/prices.json";
 const TOKEN_IMAGE_API_URL =
   "/github-api/repos/Switcheo/token-icons/contents/tokens";
 
+const mockUserBalance: TokenBalance[] = [
+  { currency: "LUNA", balance: 10.532 },
+  { currency: "BUSD", balance: 3000 },
+  { currency: "ETH", balance: 10.532 },
+  { currency: "USD", balance: 10000 },
+  { currency: "bNEO", balance: 10000 },
+];
+
 export const api = {
+  async fetchBalance(): Promise<ApiResponse<TokenBalance[]>> {
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      return {
+        data: mockUserBalance,
+        success: true,
+      };
+    } catch (error) {
+      console.log("Fetch balance errored:", error);
+      return {
+        data: [],
+        success: false,
+        error: "Fetch balance failed",
+      };
+    }
+  },
   async fetchTokens(): Promise<ApiResponse<Token[]>> {
     try {
       const [tokensResponse, imageTokensResponse] = await Promise.all([
@@ -41,7 +66,6 @@ export const api = {
           }, new Map<string, (typeof tokens)[number]>())
           .values(),
       );
-      console.log(uniqueTokens);
       return {
         data: uniqueTokens,
         success: true,
