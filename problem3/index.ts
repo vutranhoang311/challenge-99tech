@@ -44,24 +44,29 @@ const WalletPage: React.FC<Props> = (props: Props) => {
         const balancePriority = getPriority(balance.blockchain)
         // lhsPriority is undefined. should be balancePriority
         // if (lhsPriority > -99) {
-        if (balancePriority > -99) {
-          if (balance.amount <= 0) {
-            return true
-          }
-        }
-        return false
+
+        //
+        // if (balancePriority > -99) {
+        //   if (balance.amount <= 0) {
+        //     return true
+        //   }
+        // }
+        // return false
+        return balancePriority > -99 && balance.amount > 0
       })
       .sort((lhs: WalletBalance, rhs: WalletBalance) => {
         const leftPriority = getPriority(lhs.blockchain)
         const rightPriority = getPriority(rhs.blockchain)
-        if (leftPriority > rightPriority) {
-          return -1
-        } else if (rightPriority > leftPriority) {
-          return 1
+        // if (leftPriority > rightPriority) {
+        //   return -1
+        // } else if (rightPriority > leftPriority) {
+        //   return 1
+        // }
+        if (leftPriority !== rightPriority) {
+          return rightPriority - leftPriority // sort desc
         }
-
-        // missing condition rightPriority === leftPriority
-        return 0
+        // Same priority → sort alphabetically by currency
+        return lhs.currency.localeCompare(rhs.currency)
       })
     // no need prices. not use above
     // }, [balances, prices])
