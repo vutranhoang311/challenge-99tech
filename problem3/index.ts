@@ -54,7 +54,7 @@ const WalletPage: React.FC<Props> = (props: Props) => {
         // }
         // return false
         // cleaner in single line.
-        return balancePriority > -99 && balance.amount <= 0
+        return balancePriority > -99 && balance.amount > 0
       })
       .sort((lhs: WalletBalance, rhs: WalletBalance) => {
         const leftPriority = getPriority(lhs.blockchain)
