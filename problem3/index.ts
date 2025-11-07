@@ -38,21 +38,23 @@ const WalletPage: React.FC<Props> = (props: Props) => {
   const balances = useWalletBalances()
   const prices = usePrices()
 
-  const sortedBalances = useMemo(() => {
+  // should rename: example: validBalances
+  // const sortedBalances = useMemo(() => {
+  const validBalances = useMemo(() => {
     return balances
       .filter((balance: WalletBalance) => {
         const balancePriority = getPriority(balance.blockchain)
         // lhsPriority is undefined. should be balancePriority
         // if (lhsPriority > -99) {
 
-        //
         // if (balancePriority > -99) {
         //   if (balance.amount <= 0) {
         //     return true
         //   }
         // }
         // return false
-        return balancePriority > -99 && balance.amount > 0
+        // cleaner in single line.
+        return balancePriority > -99 && balance.amount <= 0
       })
       .sort((lhs: WalletBalance, rhs: WalletBalance) => {
         const leftPriority = getPriority(lhs.blockchain)
@@ -62,17 +64,19 @@ const WalletPage: React.FC<Props> = (props: Props) => {
         // } else if (rightPriority > leftPriority) {
         //   return 1
         // }
+        // miss one condition if rightPriority === leftPriority
+
         if (leftPriority !== rightPriority) {
-          return rightPriority - leftPriority // sort desc
+          return rightPriority - leftPriority
         }
-        // Same priority → sort alphabetically by currency
+        // if same priority then compare the alphabet priority
         return lhs.currency.localeCompare(rhs.currency)
       })
     // no need prices. not use above
     // }, [balances, prices])
   }, [balances])
 
-  // No use
+  // No use, remove formattedBalances
   // const formattedBalances = sortedBalances.map((balance: WalletBalance) => {
   //   return {
   //     ...balance,
@@ -80,8 +84,8 @@ const WalletPage: React.FC<Props> = (props: Props) => {
   //   }
   // })
 
-  const rows = sortedBalances.map(
-    // Wrong interface, should be WalletBalance
+  const rows = validBalances.map(
+    // wrong interface, should be WalletBalance
     // (balance: FormattedWalletBalance, index: number) => {
     (balance: WalletBalance, index: number) => {
       const usdValue = prices[balance.currency] * balance.amount
@@ -89,7 +93,7 @@ const WalletPage: React.FC<Props> = (props: Props) => {
         <WalletRow
           className={classes.row}
           key={balance.currency}
-          // anti-pattern in react, easy cause error like after sort.
+          // using index as key can cause bugs
           // key={index}
           amount={balance.amount}
           usdValue={usdValue}
